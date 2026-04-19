@@ -162,6 +162,9 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .diff-easy { background: #D4F0DE; }
 .diff-medium { background: #FFE8CC; }
 .diff-hard { background: #FFD4D4; }
+
+.test-banner { background: #FFF2CC; border: 2px solid var(--remix-orange); padding: 10px 12px; margin-bottom: 14px; font-family: var(--font-sport); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--neta-ink); }
+.test-banner b { font-weight: 700; }
 </style>
 </head>
 <body>
@@ -530,6 +533,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [playedRoundIds, setPlayedRoundIds] = useState([]);
   const [revealAt, setRevealAt] = useState(null);
+  const [testMode, setTestMode] = useState(false);
   const [toast, setToast] = useState(null);
 
   const isRevealed = revealAt && new Date() >= new Date(revealAt);
@@ -540,13 +544,15 @@ function App() {
       const { data: { session } } = await window.supabase.auth.getSession();
       if (session) setUser(session.user);
       window.supabase.auth.onAuthStateChange((_e, s) => setUser(s?.user || null));
-      // Load rounds + reveal_at in parallel
-      const [{ data: rv }, { data: rs }] = await Promise.all([
+      // Load rounds + app settings in parallel
+      const [{ data: rv }, { data: settings }] = await Promise.all([
         window.supabase.from("rounds_view").select("*").order("sort_order"),
-        window.supabase.from("app_settings").select("value").eq("key", "reveal_at").maybeSingle(),
+        window.supabase.from("app_settings").select("key, value"),
       ]);
       setRounds(rv || []);
-      setRevealAt(rs?.value || null);
+      const map = Object.fromEntries((settings || []).map(s => [s.key, s.value]));
+      setRevealAt(map.reveal_at || null);
+      setTestMode(map.test_mode === true);
       setReady(true);
     })();
   }, []);
@@ -615,6 +621,7 @@ function App() {
 
   return (
     <>
+      {testMode && <div className="test-banner">🧪 <b>Test mode</b> — scores will be wiped before launch</div>}
       {screen === "rounds" && <RoundsScreen user={user} rounds={rounds} playedRoundIds={playedRoundIds} onPick={pickRound} onSignOut={signOut} onLeaderboard={() => setScreen("leaderboard")} />}
       {screen === "play" && activeRound && <PlayScreen round={activeRound} questions={questions} onDone={finishRound} onExit={() => setScreen("rounds")} />}
       {screen === "done" && <DoneScreen round={activeRound} result={result} onLeaderboard={() => setScreen("leaderboard")} onHome={() => setScreen("rounds")} />}

@@ -279,21 +279,55 @@ function Stats({ rounds, stats }) {
   );
 }
 
+function TestMode({ testMode, onSave, onReset, onToast }) {
+  const [busy, setBusy] = useState(false);
+  async function toggle(next) {
+    const { error } = await window.supabase.from("app_settings").update({ value: JSON.stringify(next) }).eq("key", "test_mode");
+    if (error) onToast("⚠ " + error.message); else { onToast(next ? "✓ Test mode ON" : "✓ Test mode OFF"); onSave(); }
+  }
+  async function resetScores() {
+    if (!confirm("Wipe ALL scores + answers? (Players table is kept.)")) return;
+    setBusy(true);
+    const { error } = await window.supabase.rpc("admin_reset_scores");
+    setBusy(false);
+    if (error) onToast("⚠ " + error.message); else { onToast("✓ All scores wiped"); onSave(); }
+  }
+  return (
+    <div className="card" style={{ background: testMode ? "#FFF2CC" : undefined, borderColor: testMode ? "#FD7417" : undefined }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: 16 }}>🧪 Test mode is <span style={{ color: testMode ? "#FD7417" : "#6B6B72" }}>{testMode ? "ON" : "OFF"}</span></div>
+          <div className="muted" style={{ marginTop: 4, maxWidth: 460 }}>
+            When ON, every round is playable regardless of start/end time. Players see a banner.
+            Flip OFF and click "Reset scores" before launch.
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          {!testMode && <button className="primary" onClick={() => toggle(true)}>Turn ON</button>}
+          {testMode && <button onClick={() => toggle(false)}>Turn OFF</button>}
+          <button className="danger" onClick={resetScores} disabled={busy}>{busy ? "Wiping…" : "Reset scores"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState(null);
   const [authorized, setAuthorized] = useState(null); // null=checking, true, false
   const [rounds, setRounds] = useState([]);
   const [revealAt, setRevealAt] = useState(null);
+  const [testMode, setTestMode] = useState(false);
   const [admins, setAdmins] = useState([]);
   const [stats, setStats] = useState({ players: 0, scores: 0, answers: 0, questions: 0 });
   const [toast, setToast] = useState(null);
   const showToast = (m) => { setToast(m); setTimeout(() => setToast(null), 3000); };
 
   async function loadAll() {
-    const [{ data: rv }, { data: rs }, { data: ad }, qc, pc, sc, ac] = await Promise.all([
+    const [{ data: rv }, { data: settings }, { data: ad }, qc, pc, sc, ac] = await Promise.all([
       window.supabase.from("rounds_view").select("*").order("sort_order"),
-      window.supabase.from("app_settings").select("value").eq("key", "reveal_at").maybeSingle(),
+      window.supabase.from("app_settings").select("key, value"),
       window.supabase.from("admins").select("*").order("is_master", { ascending: false }),
       window.supabase.from("questions").select("id", { count: "exact", head: true }),
       window.supabase.from("players").select("id", { count: "exact", head: true }),
@@ -301,7 +335,9 @@ function App() {
       window.supabase.from("answers").select("id", { count: "exact", head: true }),
     ]);
     setRounds(rv || []);
-    setRevealAt(rs?.value || null);
+    const map = Object.fromEntries((settings || []).map(s => [s.key, s.value]));
+    setRevealAt(map.reveal_at || null);
+    setTestMode(map.test_mode === true);
     setAdmins(ad || []);
     setStats({ questions: qc.count || 0, players: pc.count || 0, scores: sc.count || 0, answers: ac.count || 0 });
   }
@@ -346,6 +382,9 @@ function App() {
         </div>
         <div><a href="index.html" className="muted" style={{ marginRight: 12 }}>← Player app</a><button onClick={signOut}>Sign out</button></div>
       </div>
+
+      <h2>Test mode</h2>
+      <TestMode testMode={testMode} onSave={loadAll} onToast={showToast} />
 
       <h2>Stats</h2>
       <Stats rounds={rounds} stats={stats} />
