@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Drop the Beat — NETA 2026 Music Trivia</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:,">
+<style>
+@font-face { font-family: "Edo";       src: url("assets/fonts/Edo.ttf") format("truetype"); font-display: swap; }
+@font-face { font-family: "Antonio";   src: url("assets/fonts/Antonio-Bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Fredoka";   src: url("assets/fonts/Fredoka.ttf") format("truetype"); font-weight: 300 700; font-display: swap; }
+@font-face { font-family: "Tropika Island Script"; src: url("assets/fonts/TropikaIslandScriptCasual.otf") format("opentype"); font-display: swap; }
+@font-face { font-family: "Helvetica Bold Condensed"; src: url("assets/fonts/HelveticaBoldCondensed.otf") format("opentype"); font-weight: 700; font-display: swap; }
+
+:root {
+  --neta-ink: #0F0F11;
+  --neta-paper: #FFFFFF;
+  --neta-paper-dim: #F4F1EC;
+  --remix-cyan: #2E9BC7;
+  --remix-orange: #FD7417;
+  --remix-pink: #EC4A97;
+  --remix-magenta: #C42583;
+  --fg-2: #3A3A3F;
+  --fg-3: #6B6B72;
+  --font-poster: "Edo", "Impact", sans-serif;
+  --font-script: "Tropika Island Script", cursive;
+  --font-chunky: "Fredoka", "Baloo 2", system-ui, sans-serif;
+  --font-sport: "Antonio", "Oswald", "Impact", sans-serif;
+  --font-utility: "Helvetica Bold Condensed", "Oswald", "Impact", sans-serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: var(--neta-ink); font-family: var(--font-body); min-height: 100vh; }
+* { box-sizing: border-box; }
+
+.app { max-width: 480px; margin: 0 auto; min-height: 100vh; padding: 16px 20px 40px; background: var(--neta-paper-dim); }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 14px; }
+.topbar .brand { display: flex; align-items: center; gap: 8px; }
+.topbar .brand img { height: 22px; }
+.topbar .brand .t { font-family: var(--font-sport); font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+.topbar .who { font-family: var(--font-sport); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); cursor: pointer; background: none; border: none; }
+
+/* Poster headline */
+.poster-header { position: relative; height: 120px; margin: 8px 16px 18px; }
+.poster-header .bar { position: absolute; left: -20px; right: -20px; top: 54px; height: 16px; background: var(--remix-orange); border-top: 2px solid var(--neta-ink); border-bottom: 2px solid var(--neta-ink); z-index: 1; }
+.h-drop { font-family: var(--font-script); font-size: 72px; line-height: .85; color: var(--remix-cyan); -webkit-text-stroke: 3px var(--neta-ink); paint-order: stroke fill; display: inline-block; position: absolute; top: 0; left: -6px; z-index: 3; white-space: nowrap; }
+.h-the { font-family: var(--font-sport); font-weight: 700; font-size: 20px; color: var(--neta-ink); letter-spacing: 0.04em; position: absolute; top: 34px; left: 140px; z-index: 4; }
+.h-beat { font-family: var(--font-chunky); font-weight: 700; font-size: 72px; line-height: .9; color: var(--remix-pink); text-transform: uppercase; -webkit-text-stroke: 3px var(--neta-ink); paint-order: stroke fill; position: absolute; top: 54px; left: 80px; z-index: 2; }
+
+.btn { font-family: var(--font-sport); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 18px; border: 2px solid var(--neta-ink); cursor: pointer; box-shadow: 4px 4px 0 0 var(--neta-ink); background: var(--neta-paper); color: var(--neta-ink); width: 100%; transition: transform .12s, box-shadow .12s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 0 var(--neta-ink); }
+.btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 0 var(--neta-ink); }
+.btn.primary { background: var(--remix-cyan); }
+.btn.pink { background: var(--remix-pink); color: var(--neta-paper); }
+.btn.ink { background: var(--neta-ink); color: var(--neta-paper); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.card { background: var(--neta-paper); border: 2px solid var(--neta-ink); box-shadow: 4px 4px 0 0 var(--neta-ink); padding: 16px; }
+
+/* Sign-in */
+.signin-hero { padding: 18px 0 14px; }
+.signin-eyebrow { font-family: var(--font-sport); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-2); margin-top: 10px; }
+.signin-title { font-family: var(--font-poster); font-size: 40px; line-height: 1; margin: 6px 0 8px; }
+.signin-sub { font-family: var(--font-body); font-size: 14px; color: var(--fg-2); margin-bottom: 20px; line-height: 1.5; }
+.google-btn { font-family: var(--font-body); font-weight: 600; font-size: 15px; text-transform: none; letter-spacing: 0; gap: 12px; }
+
+/* Rounds */
+.round-tile { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); box-shadow: 4px 4px 0 0 var(--neta-ink); margin-bottom: 10px; cursor: pointer; color: var(--neta-ink); transition: transform .12s, box-shadow .12s; }
+.round-tile:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 0 var(--neta-ink); }
+.round-tile.locked { opacity: 0.5; cursor: not-allowed; }
+.round-tile.locked:hover { transform: none; box-shadow: 4px 4px 0 0 var(--neta-ink); }
+.round-tile.played { background: var(--neta-paper-dim); }
+.round-num { font-family: var(--font-chunky); font-weight: 700; font-size: 22px; color: var(--remix-pink); text-align: center; }
+.round-name { font-family: var(--font-chunky); font-weight: 700; font-size: 16px; line-height: 1.1; }
+.round-meta { font-family: var(--font-sport); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); margin-top: 3px; }
+.status { font-family: var(--font-sport); font-weight: 700; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border: 2px solid var(--neta-ink); border-radius: 999px; white-space: nowrap; }
+.status.live { background: var(--remix-cyan); }
+.status.upcoming { background: var(--neta-paper); }
+.status.closed { background: var(--fg-3); color: var(--neta-paper); }
+.status.played { background: var(--remix-orange); }
+
+/* Play */
+.q-meta { display: flex; justify-content: space-between; align-items: center; font-family: var(--font-sport); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); margin-bottom: 6px; }
+.timer { height: 10px; background: #E9E5DE; border: 2px solid var(--neta-ink); overflow: hidden; margin-bottom: 14px; }
+.timer > div { height: 100%; background: var(--remix-cyan); width: 100%; transition: width 1s linear; }
+.prompt { font-family: var(--font-poster); font-size: 24px; line-height: 1.15; margin: 12px 0 16px; text-wrap: pretty; }
+.options { display: flex; flex-direction: column; gap: 10px; }
+.opt { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px solid var(--neta-ink); box-shadow: 3px 3px 0 0 var(--neta-ink); background: var(--neta-paper); font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: transform .1s, box-shadow .1s, background .15s; width: 100%; }
+.opt:hover:not(:disabled) { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 0 var(--neta-ink); }
+.opt:disabled { cursor: default; }
+.opt.picked { background: var(--remix-cyan); }
+.opt.picked .letter { background: var(--neta-ink); color: var(--neta-paper); }
+.opt .letter { width: 26px; height: 26px; display: grid; place-items: center; font-family: var(--font-sport); font-weight: 700; font-size: 13px; background: var(--remix-orange); border: 2px solid var(--neta-ink); flex-shrink: 0; }
+
+/* Score hero */
+.score-hero { text-align: center; padding: 20px 10px 6px; }
+.score-hero .n { font-family: var(--font-chunky); font-weight: 700; font-size: 88px; line-height: 1; color: var(--remix-pink); -webkit-text-stroke: 4px var(--neta-ink); paint-order: stroke fill; }
+.score-hero .lbl { font-family: var(--font-sport); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-2); margin-top: 4px; }
+.score-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0 18px; }
+.score-split .card { text-align: center; padding: 12px; }
+.score-split .n { font-family: var(--font-chunky); font-weight: 700; font-size: 26px; line-height: 1; -webkit-text-stroke: 2px var(--neta-ink); paint-order: stroke fill; }
+
+/* Leaderboard */
+.lb-header { font-family: var(--font-poster); font-size: 34px; line-height: 1; margin: 6px 0 16px; }
+.lb-tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+.lb-tabs::-webkit-scrollbar { display: none; }
+.lb-tab { flex-shrink: 0; font-family: var(--font-sport); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); cursor: pointer; white-space: nowrap; }
+.lb-tab.active { background: var(--remix-orange); }
+.lb-row { display: grid; grid-template-columns: 36px 1fr 70px; gap: 10px; align-items: center; padding: 10px 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); box-shadow: 3px 3px 0 0 var(--neta-ink); margin-bottom: 8px; }
+.lb-row.me { background: var(--remix-cyan); }
+.lb-rank { font-family: var(--font-chunky); font-weight: 700; font-size: 20px; color: var(--remix-pink); text-align: center; }
+.lb-rank.top { color: var(--remix-orange); }
+.lb-name { font-family: var(--font-chunky); font-weight: 700; font-size: 15px; }
+.lb-score { font-family: var(--font-utility); font-weight: 700; font-size: 20px; text-align: right; }
+
+/* EQ footer */
+.eq-footer { display: flex; align-items: flex-end; gap: 3px; height: 28px; margin: 24px 0 0; }
+.eq-bar { flex: 1; border: 2px solid var(--neta-ink); background: var(--remix-cyan); }
+.eq-bar:nth-child(3n) { background: var(--remix-orange); }
+.eq-bar:nth-child(3n+1) { background: var(--remix-pink); }
+
+/* Review screen (post-reveal) */
+.review-q { background: var(--neta-paper); border: 2px solid var(--neta-ink); padding: 12px; margin-bottom: 10px; box-shadow: 3px 3px 0 0 var(--neta-ink); }
+.review-q.correct { background: #B9F0C9; }
+.review-q.wrong { background: #FFB9B9; }
+.review-num { font-family: var(--font-sport); font-size: 10px; color: var(--fg-2); letter-spacing: 0.08em; text-transform: uppercase; }
+.review-prompt { font-family: var(--font-body); font-size: 14px; font-weight: 600; margin: 4px 0 8px; }
+.review-line { font-family: var(--font-body); font-size: 13px; margin-bottom: 3px; }
+.review-line b { font-weight: 700; }
+
+.loading { padding: 60px 20px; text-align: center; font-family: var(--font-sport); letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-2); font-size: 12px; }
+
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--neta-ink); color: #fff; padding: 10px 16px; font-family: var(--font-sport); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--neta-ink); z-index: 100; }
+
+.diff-chip { font-family: var(--font-sport); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; background: var(--neta-paper-dim); border: 1px solid var(--neta-ink); border-radius: 3px; }
+.diff-easy { background: #D4F0DE; }
+.diff-medium { background: #FFE8CC; }
+.diff-hard { background: #FFD4D4; }
+</style>
+</head>
+<body>
+
+<div id="root" class="app"><div class="loading">Loading…</div></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+window.supabase = createClient(
+  "https://vetxachkaslztfdzsghx.supabase.co",
+  "sb_publishable_FOiZXgye6Ixg0OmwNlKUqg_LsBJWotA"
+);
+window.dispatchEvent(new Event("supabase-ready"));
+</script>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// Wait for supabase client to load
+const waitForSupabase = () => new Promise((r) => {
+  if (window.supabase) return r();
+  window.addEventListener("supabase-ready", r, { once: true });
+});
+
+// ===== Shared UI bits =====
+function Brand() {
+  return (
+    <div className="brand">
+      <img src="assets/neta-logo.png" alt="NETA" />
+      <div className="t">Drop the Beat</div>
+    </div>
+  );
+}
+
+function PosterHeader() {
+  return (
+    <div className="poster-header">
+      <div className="bar" />
+      <span className="h-drop">Drop</span>
+      <span className="h-the">THE</span>
+      <span className="h-beat">BEAT</span>
+    </div>
+  );
+}
+
+function EqFooter() {
+  const heights = [40, 80, 60, 100, 55, 85, 45, 70, 95, 50, 75, 35];
+  return (
+    <div className="eq-footer">
+      {heights.map((h, i) => <div key={i} className="eq-bar" style={{ height: `${h}%` }} />)}
+    </div>
+  );
+}
+
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
+}
+
+// ===== Screens =====
+function SignInScreen({ onSignIn }) {
+  return (
+    <>
+      <div className="topbar"><Brand /></div>
+      <div className="signin-hero">
+        <PosterHeader />
+        <div className="signin-eyebrow">NETA 2026</div>
+        <div className="signin-title">What's your<br />music IQ?</div>
+        <div className="signin-sub">7 rounds · 20 questions each · 30 sec per question · speed bonus</div>
+      </div>
+      <button className="btn google-btn" onClick={onSignIn}>
+        <svg width="18" height="18" viewBox="0 0 18 18">
+          <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.17-1.84H9v3.48h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.91c1.7-1.57 2.69-3.88 2.69-6.62z" />
+          <path fill="#34A853" d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.91-2.26c-.81.54-1.84.86-3.05.86-2.35 0-4.33-1.58-5.04-3.71H.96v2.33A9 9 0 009 18z" />
+          <path fill="#FBBC05" d="M3.96 10.71A5.4 5.4 0 013.68 9c0-.59.1-1.17.28-1.71V4.96H.96A9 9 0 000 9c0 1.45.35 2.82.96 4.04l3-2.33z" />
+          <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 00.96 4.96l3 2.33C4.67 5.16 6.65 3.58 9 3.58z" />
+        </svg>
+        Sign in with Google
+      </button>
+      <div style={{ textAlign: "center", marginTop: 14, fontFamily: "var(--font-sport)", fontSize: 10, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--fg-3)" }}>
+        By playing you agree to be on the leaderboard.
+      </div>
+    </>
+  );
+}
+
+function RoundsScreen({ user, rounds, playedRoundIds, onPick, onSignOut, onLeaderboard }) {
+  return (
+    <>
+      <div className="topbar">
+        <Brand />
+        <button className="who" onClick={onSignOut}>{user.email.split("@")[0]} ▾</button>
+      </div>
+      <PosterHeader />
+      <div className="card" style={{ marginBottom: 14, padding: 12 }}>
+        <div style={{ fontFamily: "var(--font-sport)", fontWeight: 700, fontStyle: "italic", fontSize: 16 }}>What's your music IQ?</div>
+        <div className="round-meta" style={{ marginTop: 4 }}>7 rounds · 20 Qs each · 30s per Q · speed bonus</div>
+      </div>
+      <div className="round-meta" style={{ margin: "0 0 10px" }}>Choose a round</div>
+      {rounds.map((r, i) => {
+        const played = playedRoundIds.includes(r.id);
+        const status = r.effective_status;
+        const canPlay = status === "live" && !played;
+        return (
+          <a
+            key={r.id}
+            className={"round-tile" + (canPlay ? "" : " locked") + (played ? " played" : "")}
+            onClick={() => canPlay && onPick(r.id)}>
+            <div className="round-num">{r.sort_order}</div>
+            <div>
+              <div className="round-name">{r.label}</div>
+              <div className="round-meta">{fmtTime(r.starts_at)} – {fmtTime(r.ends_at).split(", ")[1] || fmtTime(r.ends_at)}</div>
+            </div>
+            <span className={"status " + (played ? "played" : status)}>{played ? "played" : status}</span>
+          </a>
+        );
+      })}
+      <button className="btn" style={{ marginTop: 14 }} onClick={onLeaderboard}>See the leaderboard →</button>
+      <EqFooter />
+    </>
+  );
+}
+
+function PlayScreen({ round, questions, onDone, onExit }) {
+  const [ix, setIx] = useState(0);
+  const [score, setScore] = useState(0);
+  const [timeBonus, setTimeBonus] = useState(0);
+  const [correct, setCorrect] = useState(0);
+  const [answers, setAnswers] = useState([]);
+  const [picked, setPicked] = useState(null);
+  const [answered, setAnswered] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(30);
+
+  const q = questions[ix];
+  const startedRef = useRef(Date.now());
+
+  useEffect(() => {
+    if (answered) return;
+    startedRef.current = Date.now();
+    setTimeLeft(30);
+    const t = setInterval(() => {
+      const elapsed = (Date.now() - startedRef.current) / 1000;
+      const left = Math.max(0, 30 - elapsed);
+      setTimeLeft(left);
+      if (left <= 0) { clearInterval(t); if (!answered) pick(null); }
+    }, 100);
+    return () => clearInterval(t);
+  }, [ix]);
+
+  function pick(choice) {
+    if (answered) return;
+    setAnswered(true);
+    setPicked(choice);
+    const tLeft = Math.max(0, 30 - (Date.now() - startedRef.current) / 1000);
+    const isRight = choice === q.answer;
+    const base = isRight ? 50 : 0;
+    const bonus = isRight ? Math.round(tLeft / 30 * 50) : 0;
+    const delta = base + bonus;
+    setScore(s => s + base);
+    setTimeBonus(b => b + bonus);
+    if (isRight) setCorrect(c => c + 1);
+    setAnswers(list => [...list, { question_id: q.id, picked: choice, is_correct: isRight, time_left: tLeft, points: delta }]);
+
+    // No feedback — just move on after a tiny pause for visual confirmation of the pick
+    setTimeout(() => {
+      if (ix + 1 < questions.length) {
+        setIx(ix + 1);
+        setPicked(null);
+        setAnswered(false);
+      } else {
+        onDone({
+          score: score + base,
+          time_bonus: timeBonus + bonus,
+          total_score: score + base + timeBonus + bonus,
+          correct: correct + (isRight ? 1 : 0),
+          total: questions.length,
+          answers: [...answers, { question_id: q.id, picked: choice, is_correct: isRight, time_left: tLeft, points: delta }],
+        });
+      }
+    }, 350);
+  }
+
+  return (
+    <>
+      <div className="topbar">
+        <Brand />
+        <button className="who" onClick={onExit}>← exit</button>
+      </div>
+      <div className="q-meta">
+        <span>{round.label} · Q {ix + 1} / {questions.length}</span>
+        <span>{q.difficulty && <span className={"diff-chip diff-" + q.difficulty} style={{ marginRight: 8 }}>{q.difficulty}</span>}</span>
+      </div>
+      <div className="timer">
+        <div style={{ width: timeLeft / 30 * 100 + "%", background: timeLeft < 10 ? "var(--remix-pink)" : "var(--remix-cyan)" }} />
+      </div>
+      <div className="prompt">{q.prompt}</div>
+      <div className="options">
+        {q.options.map((opt, i) => (
+          <button
+            key={i}
+            className={"opt" + (answered && opt === picked ? " picked" : "")}
+            disabled={answered}
+            onClick={() => pick(opt)}>
+            <span className="letter">{String.fromCharCode(65 + i)}</span>
+            <span>{opt}</span>
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function DoneScreen({ round, result, onLeaderboard, onHome }) {
+  const { score, time_bonus, total_score } = result;
+  return (
+    <>
+      <div className="topbar"><Brand /><button className="who" onClick={onHome}>← rounds</button></div>
+      <div style={{ textAlign: "center", fontFamily: "var(--font-sport)", fontSize: 12, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--fg-2)", marginTop: 10 }}>
+        Round {round.sort_order} · {round.label}
+      </div>
+      <div style={{ textAlign: "center", fontFamily: "var(--font-poster)", fontSize: 44, lineHeight: 1, margin: "10px 0 6px" }}>Nice set!</div>
+      <div style={{ textAlign: "center", fontFamily: "var(--font-body)", fontSize: 13, color: "var(--fg-2)", marginBottom: 8 }}>
+        Answers will be revealed after the conference.
+      </div>
+      <div className="score-hero">
+        <div className="n">{total_score}</div>
+        <div className="lbl">Round total</div>
+      </div>
+      <div className="score-split">
+        <div className="card">
+          <div className="n" style={{ color: "var(--remix-cyan)" }}>{score}</div>
+          <div className="round-meta" style={{ marginTop: 4 }}>Base Points</div>
+        </div>
+        <div className="card">
+          <div className="n" style={{ color: "var(--remix-orange)" }}>+{time_bonus}</div>
+          <div className="round-meta" style={{ marginTop: 4 }}>Time Bonus</div>
+        </div>
+      </div>
+      <button className="btn primary" onClick={onLeaderboard}>See the leaderboard →</button>
+      <button className="btn" style={{ marginTop: 8 }} onClick={onHome}>Back to rounds</button>
+      <EqFooter />
+    </>
+  );
+}
+
+function LeaderboardScreen({ user, rounds, onBack }) {
+  const [tab, setTab] = useState("all");
+  const [rows, setRows] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      if (tab === "all") {
+        const { data } = await window.supabase
+          .from("scores")
+          .select("score, correct, total, player_id, players(display_name, email)");
+        if (!data) return setRows([]);
+        // Sum scores per player
+        const byPlayer = new Map();
+        for (const s of data) {
+          const k = s.player_id;
+          if (!byPlayer.has(k)) byPlayer.set(k, { name: s.players?.display_name || "Player", email: s.players?.email, score: 0, rounds: 0 });
+          const agg = byPlayer.get(k);
+          agg.score += s.score;
+          agg.rounds += 1;
+        }
+        const all = [...byPlayer.values()].sort((a, b) => b.score - a.score).slice(0, 50);
+        setRows(all);
+      } else {
+        const { data } = await window.supabase
+          .from("scores")
+          .select("score, correct, total, player_id, players(display_name, email)")
+          .eq("round_id", tab)
+          .order("score", { ascending: false })
+          .limit(50);
+        setRows((data || []).map(s => ({ name: s.players?.display_name || "Player", email: s.players?.email, score: s.score, correct: s.correct, total: s.total })));
+      }
+    }
+    load();
+  }, [tab]);
+
+  return (
+    <>
+      <div className="topbar"><Brand /><button className="who" onClick={onBack}>← back</button></div>
+      <div className="lb-header">Leaderboard</div>
+      <div className="lb-tabs">
+        <button className={"lb-tab" + (tab === "all" ? " active" : "")} onClick={() => setTab("all")}>All Rounds</button>
+        {rounds.map((r) => (
+          <button key={r.id} className={"lb-tab" + (tab === r.id ? " active" : "")} onClick={() => setTab(r.id)}>R{r.sort_order}</button>
+        ))}
+      </div>
+      {!rows ? <div className="loading">Loading…</div> :
+       rows.length === 0 ? <div className="loading">No scores yet — be the first!</div> :
+       rows.map((r, i) => (
+         <div key={i} className={"lb-row" + (r.email === user.email ? " me" : "")}>
+           <div className={"lb-rank" + (i < 3 ? " top" : "")}>{i + 1}</div>
+           <div>
+             <div className="lb-name">{r.name}</div>
+             <div className="round-meta">{tab === "all" ? `${r.rounds} rounds` : `${r.correct}/${r.total} correct`}</div>
+           </div>
+           <div className="lb-score">{r.score}</div>
+         </div>
+       ))
+      }
+      <div className="round-meta" style={{ textAlign: "center", marginTop: 18 }}>Scores update live.</div>
+    </>
+  );
+}
+
+function ReviewScreen({ user, rounds, onBack }) {
+  const [roundId, setRoundId] = useState(rounds[0]?.id);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    if (!roundId) return;
+    async function load() {
+      setData(null);
+      const { data: player } = await window.supabase.from("players").select("id").eq("email", user.email).maybeSingle();
+      if (!player) return setData([]);
+      const { data: score } = await window.supabase.from("scores").select("id").eq("player_id", player.id).eq("round_id", roundId).maybeSingle();
+      if (!score) return setData([]);
+      const { data: ans } = await window.supabase.from("answers").select("picked, is_correct, question_id, questions(sort_order, prompt, answer, options)").eq("score_id", score.id);
+      const sorted = (ans || []).sort((a, b) => (a.questions?.sort_order || 0) - (b.questions?.sort_order || 0));
+      setData(sorted);
+    }
+    load();
+  }, [roundId]);
+
+  const round = rounds.find(r => r.id === roundId);
+  return (
+    <>
+      <div className="topbar"><Brand /><button className="who" onClick={onBack}>← back</button></div>
+      <div className="lb-header">Review Answers</div>
+      <div className="lb-tabs">
+        {rounds.map((r) => (
+          <button key={r.id} className={"lb-tab" + (roundId === r.id ? " active" : "")} onClick={() => setRoundId(r.id)}>R{r.sort_order}</button>
+        ))}
+      </div>
+      <div className="round-meta" style={{ margin: "0 0 12px" }}>{round?.label}</div>
+      {!data ? <div className="loading">Loading…</div> :
+       data.length === 0 ? <div className="loading">You didn't play this round.</div> :
+       data.map((a) => (
+         <div key={a.question_id} className={"review-q " + (a.is_correct ? "correct" : "wrong")}>
+           <div className="review-num">Q{a.questions?.sort_order} · {a.is_correct ? "Correct" : a.picked ? "Not quite" : "Time's up"}</div>
+           <div className="review-prompt">{a.questions?.prompt}</div>
+           <div className="review-line">Your answer: <b>{a.picked || "(none)"}</b></div>
+           {!a.is_correct && <div className="review-line">Correct: <b>{a.questions?.answer}</b></div>}
+         </div>
+       ))
+      }
+    </>
+  );
+}
+
+// ===== Root =====
+function App() {
+  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState(null);
+  const [screen, setScreen] = useState("rounds");
+  const [rounds, setRounds] = useState([]);
+  const [activeRound, setActiveRound] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [result, setResult] = useState(null);
+  const [playedRoundIds, setPlayedRoundIds] = useState([]);
+  const [revealAt, setRevealAt] = useState(null);
+  const [toast, setToast] = useState(null);
+
+  const isRevealed = revealAt && new Date() >= new Date(revealAt);
+
+  useEffect(() => {
+    (async () => {
+      await waitForSupabase();
+      const { data: { session } } = await window.supabase.auth.getSession();
+      if (session) setUser(session.user);
+      window.supabase.auth.onAuthStateChange((_e, s) => setUser(s?.user || null));
+      // Load rounds + reveal_at in parallel
+      const [{ data: rv }, { data: rs }] = await Promise.all([
+        window.supabase.from("rounds_view").select("*").order("sort_order"),
+        window.supabase.from("app_settings").select("value").eq("key", "reveal_at").maybeSingle(),
+      ]);
+      setRounds(rv || []);
+      setRevealAt(rs?.value || null);
+      setReady(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    // Ensure player row exists and fetch which rounds this user has played
+    (async () => {
+      const display_name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split("@")[0];
+      const { data: existing } = await window.supabase.from("players").select("id").eq("email", user.email).maybeSingle();
+      let playerId = existing?.id;
+      if (!playerId) {
+        const { data: created } = await window.supabase.from("players").insert({ email: user.email, display_name }).select("id").single();
+        playerId = created?.id;
+      }
+      if (playerId) {
+        const { data: scores } = await window.supabase.from("scores").select("round_id").eq("player_id", playerId);
+        setPlayedRoundIds((scores || []).map(s => s.round_id));
+      }
+    })();
+  }, [user]);
+
+  async function signIn() {
+    const { error } = await window.supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.href },
+    });
+    if (error) alert(error.message);
+  }
+  async function signOut() { await window.supabase.auth.signOut(); setScreen("rounds"); }
+
+  async function pickRound(id) {
+    const r = rounds.find(x => x.id === id);
+    if (!r) return;
+    setActiveRound(r);
+    const { data: qs } = await window.supabase.from("questions").select("id, prompt, options, answer, difficulty, sort_order").eq("round_id", id).order("sort_order");
+    setQuestions(qs || []);
+    setScreen("play");
+  }
+
+  async function finishRound(res) {
+    setResult(res);
+    setScreen("done");
+    // Persist score + answers
+    try {
+      const { data: player } = await window.supabase.from("players").select("id, display_name").eq("email", user.email).maybeSingle();
+      if (!player) throw new Error("player missing");
+      const total = res.score + res.time_bonus;
+      const { data: score, error: sErr } = await window.supabase
+        .from("scores")
+        .upsert({ player_id: player.id, round_id: activeRound.id, score: total, correct: res.correct, total: res.total, best_streak: 0 }, { onConflict: "player_id,round_id" })
+        .select("id").single();
+      if (sErr) throw sErr;
+      const rows = res.answers.map(a => ({ score_id: score.id, ...a }));
+      const { error: aErr } = await window.supabase.from("answers").insert(rows);
+      if (aErr) throw aErr;
+      setPlayedRoundIds(ids => ids.includes(activeRound.id) ? ids : [...ids, activeRound.id]);
+    } catch (e) {
+      setToast("⚠ Score save failed: " + (e.message || e));
+      setTimeout(() => setToast(null), 4000);
+    }
+  }
+
+  if (!ready) return <div className="loading">Loading…</div>;
+  if (!user) return <SignInScreen onSignIn={signIn} />;
+
+  return (
+    <>
+      {screen === "rounds" && <RoundsScreen user={user} rounds={rounds} playedRoundIds={playedRoundIds} onPick={pickRound} onSignOut={signOut} onLeaderboard={() => setScreen("leaderboard")} />}
+      {screen === "play" && activeRound && <PlayScreen round={activeRound} questions={questions} onDone={finishRound} onExit={() => setScreen("rounds")} />}
+      {screen === "done" && <DoneScreen round={activeRound} result={result} onLeaderboard={() => setScreen("leaderboard")} onHome={() => setScreen("rounds")} />}
+      {screen === "leaderboard" && <LeaderboardScreen user={user} rounds={rounds} onBack={() => setScreen("rounds")} />}
+      {screen === "review" && <ReviewScreen user={user} rounds={rounds} onBack={() => setScreen("rounds")} />}
+      {isRevealed && screen === "rounds" && (
+        <button className="btn pink" style={{ marginTop: 14 }} onClick={() => setScreen("review")}>Review your answers →</button>
+      )}
+      {toast && <div className="toast">{toast}</div>}
+    </>
+  );
+}
+
+window.addEventListener("supabase-ready", () => {
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+});
+// if supabase already loaded by the time this script runs:
+if (window.supabase) ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>

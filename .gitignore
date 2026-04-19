@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+
+# Secrets (never commit)
+client_secret*.json
+*.pem
+*.key
+
+# Local dev
+node_modules/
+.env
+.env.local
+
+# Old prototype files (can remove once happy with new index.html)
+Drop the Beat.html
+app.jsx
+questions.js
+oauth-test.html
+
+# Source CSVs — safe to keep, but not needed in repo
+trivia_*.csv

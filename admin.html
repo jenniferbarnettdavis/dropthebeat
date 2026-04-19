@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Drop the Beat</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --neta-ink: #0F0F11; --neta-paper: #FFFFFF; --neta-paper-dim: #F4F1EC;
+    --remix-cyan: #2E9BC7; --remix-orange: #FD7417; --remix-pink: #EC4A97;
+    --fg-2: #3A3A3F; --fg-3: #6B6B72;
+  }
+  body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--neta-paper-dim); color: var(--neta-ink); }
+  * { box-sizing: border-box; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; }
+  h1 { font-family: "Fredoka", system-ui; font-weight: 700; margin: 0 0 4px; font-size: 32px; }
+  h2 { font-family: "Antonio", Impact, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; font-size: 14px; color: var(--fg-2); margin: 32px 0 12px; border-bottom: 2px solid var(--neta-ink); padding-bottom: 6px; }
+  .eyebrow { font-family: "Antonio", Impact, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; font-size: 12px; color: var(--fg-3); }
+  .card { background: var(--neta-paper); border: 2px solid var(--neta-ink); box-shadow: 4px 4px 0 0 var(--neta-ink); padding: 16px; margin-bottom: 14px; }
+  button { font-family: "Antonio", Impact, sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 10px 14px; border: 2px solid var(--neta-ink); background: var(--neta-paper); cursor: pointer; box-shadow: 3px 3px 0 0 var(--neta-ink); }
+  button:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 0 var(--neta-ink); }
+  button:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 0 var(--neta-ink); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary { background: var(--remix-cyan); }
+  button.danger { background: var(--remix-pink); color: #fff; }
+  button.ghost { background: transparent; box-shadow: none; border: none; font-weight: 600; }
+  input, select { font-family: system-ui; font-size: 14px; padding: 8px 10px; border: 2px solid var(--neta-ink); background: #fff; width: 100%; }
+  label { display: block; font-size: 11px; font-weight: 600; color: var(--fg-2); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 4px; }
+  .row { display: grid; grid-template-columns: 60px 1fr 1fr 1fr 110px 90px; gap: 10px; align-items: end; margin-bottom: 10px; }
+  .row.header { font-size: 11px; color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; border-bottom: 2px solid var(--neta-ink); padding-bottom: 6px; margin-bottom: 10px; align-items: center; }
+  .row-cell-num { font-family: "Fredoka", system-ui; font-weight: 700; font-size: 22px; color: var(--remix-pink); text-align: center; }
+  .chip { font-size: 10px; font-weight: 700; padding: 3px 8px; border: 2px solid var(--neta-ink); border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; }
+  .chip.upcoming { background: var(--neta-paper); }
+  .chip.live { background: var(--remix-cyan); }
+  .chip.closed { background: var(--fg-3); color: #fff; }
+  .chip.auto { background: #E8E4DD; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--neta-ink); color: #fff; padding: 10px 16px; font-family: "Antonio", Impact; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--neta-ink); z-index: 100; }
+  .err { color: #D93838; font-weight: 700; }
+  .ok { color: #2FA46A; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { text-align: left; padding: 10px 8px; border-bottom: 1px solid #E0DDD6; }
+  th { font-size: 11px; color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .muted { color: var(--fg-3); font-size: 13px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .stat { background: var(--neta-paper); border: 2px solid var(--neta-ink); box-shadow: 4px 4px 0 0 var(--neta-ink); padding: 12px; }
+  .stat .n { font-family: "Fredoka", system-ui; font-weight: 700; font-size: 32px; line-height: 1; color: var(--remix-cyan); }
+  .stat .lbl { font-size: 11px; color: var(--fg-2); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  @media (max-width: 700px) {
+    .row { grid-template-columns: 1fr; }
+    .row.header { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="root">Loading…</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+window.supabase = createClient(
+  "https://vetxachkaslztfdzsghx.supabase.co",
+  "sb_publishable_FOiZXgye6Ixg0OmwNlKUqg_LsBJWotA"
+);
+window.dispatchEvent(new Event("supabase-ready"));
+</script>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect } = React;
+const waitForSupabase = () => new Promise((r) => window.supabase ? r() : window.addEventListener("supabase-ready", r, { once: true }));
+
+// Convert a DB timestamptz into the value an <input type="datetime-local"> wants
+// (always in America/Chicago local time, stripped of seconds)
+function toLocalInput(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  // Build YYYY-MM-DDTHH:MM in Chicago time
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Chicago", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false
+  }).formatToParts(d).reduce((o, p) => (o[p.type] = p.value, o), {});
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour === "24" ? "00" : parts.hour}:${parts.minute}`;
+}
+function fromLocalInput(v) {
+  // Treat the input as Chicago time; emit ISO with the offset embedded.
+  if (!v) return null;
+  // Find offset for this date in Chicago
+  const d = new Date(v);
+  // We can't directly ask JS for Chicago offset in a portable way, so:
+  // Build a "pretend UTC" date with the same wall time, then figure out the offset.
+  const cstOffsetHours = (() => {
+    const test = new Date(v + ":00Z");
+    const cst = new Date(test.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+    const utc = new Date(test.toLocaleString("en-US", { timeZone: "UTC" }));
+    return (utc - cst) / 36e5;
+  })();
+  const sign = cstOffsetHours >= 0 ? "-" : "+"; // offset from UTC; Chicago is negative
+  const h = String(Math.abs(cstOffsetHours)).padStart(2, "0");
+  return `${v}:00${sign}${h}:00`;
+}
+
+function fmtRange(a, b) {
+  const f = (iso) => new Date(iso).toLocaleString("en-US", { timeZone: "America/Chicago", weekday: "short", hour: "numeric", minute: "2-digit" });
+  return `${f(a)} – ${new Date(b).toLocaleString("en-US", { timeZone: "America/Chicago", hour: "numeric", minute: "2-digit" })}`;
+}
+
+function Toast({ msg }) { return msg ? <div className="toast">{msg}</div> : null; }
+
+function SignIn({ onSignIn }) {
+  return (
+    <div className="card" style={{ marginTop: 40, textAlign: "center" }}>
+      <h1>Drop the Beat · Admin</h1>
+      <p className="muted">You must be an admin to use this page.</p>
+      <button className="primary" onClick={onSignIn}>Sign in with Google</button>
+    </div>
+  );
+}
+
+function NotAuthorized({ email, onSignOut }) {
+  return (
+    <div className="card" style={{ marginTop: 40, textAlign: "center" }}>
+      <h1>Not authorized</h1>
+      <p>Signed in as <b>{email}</b> — but this email isn't in the admins list.</p>
+      <p className="muted">Ask the master admin to add you.</p>
+      <button onClick={onSignOut}>Sign out</button>
+    </div>
+  );
+}
+
+function Rounds({ rounds, onSave, onToast }) {
+  const [draft, setDraft] = useState(() => rounds.map(r => ({ ...r })));
+  useEffect(() => { setDraft(rounds.map(r => ({ ...r }))); }, [rounds]);
+
+  function update(i, patch) { setDraft(d => d.map((r, j) => j === i ? { ...r, ...patch } : r)); }
+
+  async function saveOne(i) {
+    const r = draft[i];
+    const { error } = await window.supabase.from("rounds").update({
+      label: r.label,
+      starts_at: fromLocalInput(toLocalInput(r.starts_at)), // normalizes
+      ends_at:   fromLocalInput(toLocalInput(r.ends_at)),
+      status: r.status,
+      sort_order: r.sort_order,
+    }).eq("id", r.id);
+    if (error) { onToast("⚠ " + error.message); return; }
+    onToast("✓ Saved R" + r.sort_order);
+    onSave();
+  }
+  async function saveDirectEdit(i, patch) {
+    // For datetime fields coming from the input directly
+    const r = draft[i];
+    const next = { ...r, ...patch };
+    setDraft(d => d.map((row, j) => j === i ? next : row));
+  }
+
+  return (
+    <div>
+      <div className="row header">
+        <div>#</div><div>Label</div><div>Starts</div><div>Ends</div><div>Status</div><div></div>
+      </div>
+      {draft.map((r, i) => (
+        <div className="row" key={r.id}>
+          <div className="row-cell-num">{r.sort_order}</div>
+          <div>
+            <label>Label</label>
+            <input value={r.label} onChange={e => update(i, { label: e.target.value })} />
+          </div>
+          <div>
+            <label>Starts (CT)</label>
+            <input type="datetime-local" value={toLocalInput(r.starts_at)} onChange={e => update(i, { starts_at: fromLocalInput(e.target.value) })} />
+          </div>
+          <div>
+            <label>Ends (CT)</label>
+            <input type="datetime-local" value={toLocalInput(r.ends_at)} onChange={e => update(i, { ends_at: fromLocalInput(e.target.value) })} />
+          </div>
+          <div>
+            <label>Status</label>
+            <select value={r.status} onChange={e => update(i, { status: e.target.value })}>
+              <option value="auto">auto</option>
+              <option value="upcoming">upcoming</option>
+              <option value="live">live</option>
+              <option value="closed">closed</option>
+            </select>
+          </div>
+          <div style={{ paddingBottom: 0 }}>
+            <button onClick={() => saveOne(i)}>Save</button>
+          </div>
+        </div>
+      ))}
+      <div className="muted" style={{ marginTop: 12, fontSize: 13 }}>
+        <b>Status: auto</b> = live between start/end, otherwise upcoming/closed. Override if you need to.
+      </div>
+    </div>
+  );
+}
+
+function RevealAt({ revealAt, onSave, onToast }) {
+  const [val, setVal] = useState(toLocalInput(revealAt));
+  useEffect(() => { setVal(toLocalInput(revealAt)); }, [revealAt]);
+  const isRevealed = revealAt && new Date() >= new Date(revealAt);
+  return (
+    <div className="card">
+      <label>Reveal answers at (CT)</label>
+      <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+        <input type="datetime-local" value={val} onChange={e => setVal(e.target.value)} style={{ flex: 1 }} />
+        <button className="primary" onClick={async () => {
+          const iso = fromLocalInput(val);
+          const { error } = await window.supabase.from("app_settings").update({ value: JSON.stringify(iso) }).eq("key", "reveal_at");
+          if (error) onToast("⚠ " + error.message); else { onToast("✓ Reveal time saved"); onSave(); }
+        }}>Save</button>
+      </div>
+      <div className="muted" style={{ marginTop: 8 }}>
+        {isRevealed ? <span className="ok">● Already revealed</span> : "Players will see 'Review your answers' after this time."}
+      </div>
+    </div>
+  );
+}
+
+function Admins({ user, admins, onChange, onToast }) {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const isMaster = admins.find(a => a.email === user.email)?.is_master;
+
+  async function add() {
+    if (!email) return;
+    const { error } = await window.supabase.from("admins").insert({ email: email.toLowerCase().trim(), display_name: name || null, added_by: user.email });
+    if (error) onToast("⚠ " + error.message); else { setEmail(""); setName(""); onToast("✓ Admin added"); onChange(); }
+  }
+  async function remove(e) {
+    if (!confirm(`Remove ${e}?`)) return;
+    const { error } = await window.supabase.from("admins").delete().eq("email", e);
+    if (error) onToast("⚠ " + error.message); else { onToast("✓ Removed"); onChange(); }
+  }
+
+  return (
+    <div>
+      <table>
+        <thead><tr><th>Email</th><th>Name</th><th>Role</th><th></th></tr></thead>
+        <tbody>
+          {admins.map(a => (
+            <tr key={a.email}>
+              <td>{a.email}</td>
+              <td>{a.display_name || <span className="muted">—</span>}</td>
+              <td>{a.is_master ? <b>master</b> : "admin"}</td>
+              <td style={{ textAlign: "right" }}>
+                {!a.is_master && isMaster && <button className="danger" onClick={() => remove(a.email)}>Remove</button>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {isMaster && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <h3 style={{ margin: "0 0 10px" }}>Add admin</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 10, alignItems: "end" }}>
+            <div><label>Email</label><input value={email} onChange={e => setEmail(e.target.value)} placeholder="someone@example.org" /></div>
+            <div><label>Display name</label><input value={name} onChange={e => setName(e.target.value)} placeholder="optional" /></div>
+            <button className="primary" onClick={add}>Add</button>
+          </div>
+        </div>
+      )}
+      {!isMaster && <div className="muted" style={{ marginTop: 10 }}>Only the master admin can add or remove admins.</div>}
+    </div>
+  );
+}
+
+function Stats({ rounds, stats }) {
+  const total = stats.players;
+  return (
+    <div className="stat-grid">
+      <div className="stat"><div className="n">{stats.players}</div><div className="lbl">Players</div></div>
+      <div className="stat"><div className="n">{stats.scores}</div><div className="lbl">Scores recorded</div></div>
+      <div className="stat"><div className="n">{stats.answers}</div><div className="lbl">Answers submitted</div></div>
+      <div className="stat"><div className="n">{stats.questions}</div><div className="lbl">Questions in DB</div></div>
+    </div>
+  );
+}
+
+function App() {
+  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authorized, setAuthorized] = useState(null); // null=checking, true, false
+  const [rounds, setRounds] = useState([]);
+  const [revealAt, setRevealAt] = useState(null);
+  const [admins, setAdmins] = useState([]);
+  const [stats, setStats] = useState({ players: 0, scores: 0, answers: 0, questions: 0 });
+  const [toast, setToast] = useState(null);
+  const showToast = (m) => { setToast(m); setTimeout(() => setToast(null), 3000); };
+
+  async function loadAll() {
+    const [{ data: rv }, { data: rs }, { data: ad }, qc, pc, sc, ac] = await Promise.all([
+      window.supabase.from("rounds_view").select("*").order("sort_order"),
+      window.supabase.from("app_settings").select("value").eq("key", "reveal_at").maybeSingle(),
+      window.supabase.from("admins").select("*").order("is_master", { ascending: false }),
+      window.supabase.from("questions").select("id", { count: "exact", head: true }),
+      window.supabase.from("players").select("id", { count: "exact", head: true }),
+      window.supabase.from("scores").select("id", { count: "exact", head: true }),
+      window.supabase.from("answers").select("id", { count: "exact", head: true }),
+    ]);
+    setRounds(rv || []);
+    setRevealAt(rs?.value || null);
+    setAdmins(ad || []);
+    setStats({ questions: qc.count || 0, players: pc.count || 0, scores: sc.count || 0, answers: ac.count || 0 });
+  }
+
+  useEffect(() => {
+    (async () => {
+      await waitForSupabase();
+      const { data: { session } } = await window.supabase.auth.getSession();
+      if (session) setUser(session.user);
+      window.supabase.auth.onAuthStateChange((_e, s) => setUser(s?.user || null));
+      setReady(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!user) { setAuthorized(null); return; }
+    (async () => {
+      const { data: me } = await window.supabase.from("admins").select("email, is_master").eq("email", user.email).maybeSingle();
+      if (me) { setAuthorized(true); await loadAll(); }
+      else setAuthorized(false);
+    })();
+  }, [user]);
+
+  async function signIn() {
+    const { error } = await window.supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: window.location.href } });
+    if (error) alert(error.message);
+  }
+  async function signOut() { await window.supabase.auth.signOut(); }
+
+  if (!ready) return <div>Loading…</div>;
+  if (!user) return <SignIn onSignIn={signIn} />;
+  if (authorized === null) return <div>Checking admin access…</div>;
+  if (!authorized) return <NotAuthorized email={user.email} onSignOut={signOut} />;
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 20 }}>
+        <div>
+          <div className="eyebrow">NETA 2026 · Admin</div>
+          <h1>Drop the Beat</h1>
+          <div className="muted">Signed in as {user.email}</div>
+        </div>
+        <div><a href="index.html" className="muted" style={{ marginRight: 12 }}>← Player app</a><button onClick={signOut}>Sign out</button></div>
+      </div>
+
+      <h2>Stats</h2>
+      <Stats rounds={rounds} stats={stats} />
+
+      <h2>Reveal answers</h2>
+      <RevealAt revealAt={revealAt} onSave={loadAll} onToast={showToast} />
+
+      <h2>Round schedule</h2>
+      <Rounds rounds={rounds} onSave={loadAll} onToast={showToast} />
+
+      <h2>Admins</h2>
+      <Admins user={user} admins={admins} onChange={loadAll} onToast={showToast} />
+
+      <Toast msg={toast} />
+    </div>
+  );
+}
+
+window.addEventListener("supabase-ready", () => {
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+});
+if (window.supabase) ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>
