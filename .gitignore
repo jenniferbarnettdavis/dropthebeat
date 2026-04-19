@@ -17,5 +17,5 @@ app.jsx
 questions.js
 oauth-test.html
 
-# Source CSVs — safe to keep, but not needed in repo
-trivia_*.csv
+# Source CSVs — keep the current one, ignore older ones
+trivia_140_questions.csv
