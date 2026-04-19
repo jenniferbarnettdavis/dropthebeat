@@ -309,6 +309,33 @@ function RoundsScreen({ user, rounds, playedRoundIds, onPick, onSignOut, onLeade
   );
 }
 
+// ===== Round start / ready screen =====
+function StartRoundScreen({ round, onStart, onExit }) {
+  return (
+    <>
+      <div className="topbar"><Brand /><button className="who" onClick={onExit}>← rounds</button></div>
+      <div style={{ textAlign: "center", fontFamily: "var(--font-sport)", fontSize: 14, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--fg-2)", marginTop: 18 }}>
+        Round {round.sort_order}
+      </div>
+      <div style={{ textAlign: "center", fontFamily: "var(--font-chunky)", fontWeight: 700, fontSize: 40, lineHeight: 1.05, margin: "6px 12px 8px" }}>
+        {round.label}
+      </div>
+      <div style={{ textAlign: "center", fontFamily: "var(--font-sport)", fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--fg-2)", marginBottom: 18 }}>
+        15 questions · 30 sec each · speed bonus
+      </div>
+      <div className="house-rules" style={{ margin: "0 0 20px" }}>
+        <div className="house-rule warn">
+          <div className="icon">!</div>
+          <div><b>No sharing answers.</b> Each round is played solo — comparing answers with other players ruins the fun (and the leaderboard).</div>
+        </div>
+      </div>
+      <button className="btn primary" onClick={onStart}>Start round →</button>
+      <button className="btn" style={{ marginTop: 8 }} onClick={onExit}>← Back to rounds</button>
+      <EqFooter />
+    </>
+  );
+}
+
 function PlayScreen({ round, questions, onDone, onExit }) {
   const [ix, setIx] = useState(0);
   const [score, setScore] = useState(0);
@@ -607,7 +634,7 @@ function App() {
     setActiveRound(r);
     const { data: qs } = await window.supabase.from("questions").select("id, prompt, options, answer, difficulty, sort_order").eq("round_id", id).order("sort_order");
     setQuestions(qs || []);
-    setScreen("play");
+    setScreen("start");
   }
 
   async function finishRound(res) {
@@ -640,6 +667,7 @@ function App() {
     <>
       {testMode && <div className="test-banner">🧪 <b>Test mode</b> — scores will be wiped before launch</div>}
       {screen === "rounds" && <RoundsScreen user={user} rounds={rounds} playedRoundIds={playedRoundIds} onPick={pickRound} onSignOut={signOut} onLeaderboard={() => setScreen("leaderboard")} />}
+      {screen === "start" && activeRound && <StartRoundScreen round={activeRound} onStart={() => setScreen("play")} onExit={() => setScreen("rounds")} />}
       {screen === "play" && activeRound && <PlayScreen round={activeRound} questions={questions} onDone={finishRound} onExit={() => setScreen("rounds")} />}
       {screen === "done" && <DoneScreen round={activeRound} result={result} onLeaderboard={() => setScreen("leaderboard")} onHome={() => setScreen("rounds")} />}
       {screen === "leaderboard" && <LeaderboardScreen user={user} rounds={rounds} onBack={() => setScreen("rounds")} />}
