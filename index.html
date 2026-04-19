@@ -32,7 +32,34 @@
 html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: var(--neta-ink); font-family: var(--font-body); min-height: 100vh; }
 * { box-sizing: border-box; }
 
-.app { max-width: 480px; margin: 0 auto; min-height: 100vh; padding: 16px 20px 40px; background: var(--neta-paper-dim); }
+/* Mobile-first: full-width stage. On desktop, paint a "phone card" and center it. */
+.stage { min-height: 100vh; display: flex; flex-direction: column; align-items: stretch; background: var(--neta-paper-dim); }
+.app { width: 100%; max-width: 480px; margin: 0 auto; min-height: 100vh; padding: 16px 20px 40px; background: var(--neta-paper-dim); flex: 1; }
+
+/* Desktop-only: center the app, add a framed card with a shadow, and show some poster background */
+@media (min-width: 768px) {
+  body {
+    background:
+      radial-gradient(ellipse at top, rgba(46,155,199,0.12), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(236,74,151,0.08), transparent 55%),
+      var(--neta-paper-dim);
+    padding: 40px 20px;
+  }
+  .stage { min-height: calc(100vh - 80px); justify-content: center; }
+  .app {
+    min-height: 0;
+    max-width: 460px;
+    background: var(--neta-paper);
+    border: 2px solid var(--neta-ink);
+    box-shadow: 10px 10px 0 0 var(--neta-ink);
+    padding: 28px 28px 40px;
+    margin: 20px auto;
+  }
+}
+/* On really wide screens, keep things centered but allow a bit more breathing room */
+@media (min-width: 1200px) {
+  .app { max-width: 500px; }
+}
 .topbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 14px; }
 .topbar .brand { display: flex; align-items: center; gap: 8px; }
 .topbar .brand img { height: 22px; }
@@ -139,7 +166,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 </head>
 <body>
 
-<div id="root" class="app"><div class="loading">Loading…</div></div>
+<div class="stage"><div id="root" class="app"><div class="loading">Loading…</div></div></div>
 
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
