@@ -329,12 +329,15 @@ function SignInScreen({ onSignIn }) {
   );
 }
 
-function RoundsScreen({ user, rounds, playedRoundIds, onPick, onSignOut, onLeaderboard }) {
+function RoundsScreen({ user, isAdmin, rounds, playedRoundIds, onPick, onSignOut, onLeaderboard }) {
   return (
     <>
       <div className="topbar">
         <Brand />
-        <button className="who" onClick={onSignOut}>{user.email.split("@")[0]} ▾</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {isAdmin && <a className="who" href="admin.html" style={{ textDecoration: "none" }}>⚙ Admin</a>}
+          <button className="who" onClick={onSignOut}>{user.email.split("@")[0]} ▾</button>
+        </div>
       </div>
       <PosterHeader />
       <div className="card" style={{ marginBottom: 14, padding: 12 }}>
@@ -639,6 +642,7 @@ function App() {
   const [playedRoundIds, setPlayedRoundIds] = useState([]);
   const [revealAt, setRevealAt] = useState(null);
   const [testMode, setTestMode] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [toast, setToast] = useState(null);
 
   const isRevealed = revealAt && new Date() >= new Date(revealAt);
@@ -663,7 +667,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) { setIsAdmin(false); return; }
     // Ensure player row exists and fetch which rounds this user has played
     (async () => {
       const display_name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split("@")[0];
@@ -677,6 +681,9 @@ function App() {
         const { data: scores } = await window.supabase.from("scores").select("round_id").eq("player_id", playerId);
         setPlayedRoundIds((scores || []).map(s => s.round_id));
       }
+      // Check if this user is an admin (so we can show an "Admin" link in the top bar)
+      const { data: adminRow } = await window.supabase.from("admins").select("email").eq("email", user.email).maybeSingle();
+      setIsAdmin(!!adminRow);
     })();
   }, [user]);
 
@@ -727,7 +734,7 @@ function App() {
   return (
     <>
       {testMode && <div className="test-banner">🧪 <b>Test mode</b> — scores will be wiped before launch</div>}
-      {screen === "rounds" && <RoundsScreen user={user} rounds={rounds} playedRoundIds={playedRoundIds} onPick={pickRound} onSignOut={signOut} onLeaderboard={() => setScreen("leaderboard")} />}
+      {screen === "rounds" && <RoundsScreen user={user} isAdmin={isAdmin} rounds={rounds} playedRoundIds={playedRoundIds} onPick={pickRound} onSignOut={signOut} onLeaderboard={() => setScreen("leaderboard")} />}
       {screen === "start" && activeRound && <StartRoundScreen round={activeRound} onStart={() => setScreen("play")} onExit={() => setScreen("rounds")} />}
       {screen === "play" && activeRound && <PlayScreen round={activeRound} questions={questions} onDone={finishRound} onExit={() => setScreen("rounds")} />}
       {screen === "done" && <DoneScreen round={activeRound} result={result} onLeaderboard={() => setScreen("leaderboard")} onHome={() => setScreen("rounds")} />}
