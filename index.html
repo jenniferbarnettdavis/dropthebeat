@@ -17,8 +17,11 @@
   --neta-paper: #FFFFFF;
   --neta-paper-dim: #F4F1EC;
   --remix-cyan: #2E9BC7;
+  --remix-cyan-tint: #BEE4F1;
   --remix-orange: #FD7417;
+  --remix-orange-tint: #FFD6AD;
   --remix-pink: #EC4A97;
+  --remix-pink-tint: #FBC7DF;
   --remix-magenta: #C42583;
   --fg-2: #3A3A3F;
   --fg-3: #6B6B72;
@@ -76,7 +79,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .btn { font-family: var(--font-sport); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 18px; border: 2px solid var(--neta-ink); cursor: pointer; box-shadow: 4px 4px 0 0 var(--neta-ink); background: var(--neta-paper); color: var(--neta-ink); width: 100%; transition: transform .12s, box-shadow .12s; display: flex; align-items: center; justify-content: center; gap: 10px; }
 .btn:hover { transform: translate(-1px,-1px); box-shadow: 5px 5px 0 0 var(--neta-ink); }
 .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 0 var(--neta-ink); }
-.btn.primary { background: var(--remix-cyan); }
+.btn.primary { background: var(--remix-cyan-tint); }
 .btn.pink { background: var(--remix-pink); color: var(--neta-paper); }
 .btn.ink { background: var(--neta-ink); color: var(--neta-paper); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -100,7 +103,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .round-name { font-family: var(--font-chunky); font-weight: 700; font-size: 16px; line-height: 1.1; }
 .round-meta { font-family: var(--font-sport); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); margin-top: 3px; }
 .status { font-family: var(--font-sport); font-weight: 700; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border: 2px solid var(--neta-ink); border-radius: 999px; white-space: nowrap; }
-.status.live { background: var(--remix-cyan); }
+.status.live { background: var(--remix-cyan-tint); }
 .status.upcoming { background: var(--neta-paper); }
 .status.closed { background: var(--fg-3); color: var(--neta-paper); }
 .status.played { background: var(--remix-orange); }
@@ -114,7 +117,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .opt { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 2px solid var(--neta-ink); box-shadow: 3px 3px 0 0 var(--neta-ink); background: var(--neta-paper); font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; text-align: left; transition: transform .1s, box-shadow .1s, background .15s; width: 100%; }
 .opt:hover:not(:disabled) { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 0 var(--neta-ink); }
 .opt:disabled { cursor: default; }
-.opt.picked { background: var(--remix-cyan); }
+.opt.picked { background: var(--remix-cyan-tint); }
 .opt.picked .letter { background: var(--neta-ink); color: var(--neta-paper); }
 .opt .letter { width: 26px; height: 26px; display: grid; place-items: center; font-family: var(--font-sport); font-weight: 700; font-size: 13px; background: var(--remix-orange); border: 2px solid var(--neta-ink); flex-shrink: 0; }
 
@@ -133,7 +136,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .lb-tab { flex-shrink: 0; font-family: var(--font-sport); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; padding: 8px 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); cursor: pointer; white-space: nowrap; }
 .lb-tab.active { background: var(--remix-orange); }
 .lb-row { display: grid; grid-template-columns: 36px 1fr 70px; gap: 10px; align-items: center; padding: 10px 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); box-shadow: 3px 3px 0 0 var(--neta-ink); margin-bottom: 8px; }
-.lb-row.me { background: var(--remix-cyan); }
+.lb-row.me { background: var(--remix-cyan-tint); }
 .lb-rank { font-family: var(--font-chunky); font-weight: 700; font-size: 20px; color: var(--remix-pink); text-align: center; }
 .lb-rank.top { color: var(--remix-orange); }
 .lb-name { font-family: var(--font-chunky); font-weight: 700; font-size: 15px; }
@@ -166,7 +169,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .test-banner { background: #FFF2CC; border: 2px solid var(--remix-orange); padding: 10px 12px; margin-bottom: 14px; font-family: var(--font-sport); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--neta-ink); }
 .test-banner b { font-weight: 700; }
 
-.round-cd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; margin: 0 0 14px; border: 2px solid var(--neta-ink); box-shadow: 4px 4px 0 0 var(--neta-ink); background: var(--remix-cyan); }
+.round-cd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; margin: 0 0 14px; border: 2px solid var(--neta-ink); box-shadow: 4px 4px 0 0 var(--neta-ink); background: var(--remix-cyan-tint); }
 .round-cd.next { background: var(--neta-paper); }
 .round-cd.urgent { background: var(--remix-pink); color: var(--neta-paper); }
 .round-cd-label { font-family: var(--font-sport); font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.2; }
@@ -176,7 +179,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .house-rule { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); box-shadow: 3px 3px 0 0 var(--neta-ink); margin-bottom: 8px; font-family: var(--font-body); font-size: 13px; line-height: 1.4; }
 .house-rule .icon { flex-shrink: 0; width: 24px; height: 24px; display: grid; place-items: center; border: 2px solid var(--neta-ink); font-family: var(--font-sport); font-weight: 700; font-size: 13px; }
 .house-rule.warn .icon { background: var(--remix-pink); color: var(--neta-paper); }
-.house-rule.info .icon { background: var(--remix-cyan); }
+.house-rule.info .icon { background: var(--remix-cyan-tint); }
 .house-rule b { font-weight: 700; }
 </style>
 </head>

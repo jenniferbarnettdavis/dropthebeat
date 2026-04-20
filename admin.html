@@ -8,7 +8,9 @@
 <style>
   :root {
     --neta-ink: #0F0F11; --neta-paper: #FFFFFF; --neta-paper-dim: #F4F1EC;
-    --remix-cyan: #2E9BC7; --remix-orange: #FD7417; --remix-pink: #EC4A97;
+    --remix-cyan: #2E9BC7; --remix-cyan-tint: #BEE4F1;
+    --remix-orange: #FD7417; --remix-orange-tint: #FFD6AD;
+    --remix-pink: #EC4A97; --remix-pink-tint: #FBC7DF;
     --fg-2: #3A3A3F; --fg-3: #6B6B72;
   }
   body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--neta-paper-dim); color: var(--neta-ink); }
@@ -22,7 +24,7 @@
   button:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 0 var(--neta-ink); }
   button:active { transform: translate(1px, 1px); box-shadow: 2px 2px 0 0 var(--neta-ink); }
   button:disabled { opacity: 0.5; cursor: not-allowed; }
-  button.primary { background: var(--remix-cyan); }
+  button.primary { background: var(--remix-cyan-tint); }
   button.danger { background: var(--remix-pink); color: #fff; }
   button.ghost { background: transparent; box-shadow: none; border: none; font-weight: 600; }
   input, select { font-family: system-ui; font-size: 14px; padding: 8px 10px; border: 2px solid var(--neta-ink); background: #fff; width: 100%; }
@@ -32,7 +34,7 @@
   .row-cell-num { font-family: "Fredoka", system-ui; font-weight: 700; font-size: 22px; color: var(--remix-pink); text-align: center; }
   .chip { font-size: 10px; font-weight: 700; padding: 3px 8px; border: 2px solid var(--neta-ink); border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; }
   .chip.upcoming { background: var(--neta-paper); }
-  .chip.live { background: var(--remix-cyan); }
+  .chip.live { background: var(--remix-cyan-tint); }
   .chip.closed { background: var(--fg-3); color: #fff; }
   .chip.auto { background: #E8E4DD; }
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--neta-ink); color: #fff; padding: 10px 16px; font-family: "Antonio", Impact; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--neta-ink); z-index: 100; }
