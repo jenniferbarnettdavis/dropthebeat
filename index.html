@@ -438,6 +438,7 @@ function DoneScreen({ round, result, onLeaderboard, onHome }) {
   return (
     <>
       <div className="topbar"><Brand /><button className="who" onClick={onHome}>← rounds</button></div>
+      <PosterHeader />
       <div style={{ textAlign: "center", fontFamily: "var(--font-sport)", fontSize: 12, letterSpacing: ".14em", textTransform: "uppercase", color: "var(--fg-2)", marginTop: 10 }}>
         Round {round.sort_order} · {round.label}
       </div>
@@ -553,6 +554,7 @@ function ReviewScreen({ user, rounds, onBack }) {
   return (
     <>
       <div className="topbar"><Brand /><button className="who" onClick={onBack}>← back</button></div>
+      <PosterHeader />
       <div className="lb-header">Review Answers</div>
       <div className="lb-tabs">
         {rounds.map((r) => (
