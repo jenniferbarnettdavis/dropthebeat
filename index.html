@@ -186,7 +186,15 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 window.supabase = createClient(
   "https://vetxachkaslztfdzsghx.supabase.co",
-  "sb_publishable_FOiZXgye6Ixg0OmwNlKUqg_LsBJWotA"
+  "sb_publishable_FOiZXgye6Ixg0OmwNlKUqg_LsBJWotA",
+  {
+    auth: {
+      detectSessionInUrl: true,
+      flowType: "pkce",
+      autoRefreshToken: true,
+      persistSession: true,
+    },
+  }
 );
 window.dispatchEvent(new Event("supabase-ready"));
 </script>
