@@ -218,7 +218,7 @@ function RevealAt({ revealAt, onSave, onToast }) {
         <input type="datetime-local" value={val} onChange={e => setVal(e.target.value)} style={{ flex: 1 }} />
         <button className="primary" onClick={async () => {
           const iso = fromLocalInput(val);
-          const { error } = await window.supabase.from("app_settings").update({ value: JSON.stringify(iso) }).eq("key", "reveal_at");
+          const { error } = await window.supabase.from("app_settings").update({ value: iso }).eq("key", "reveal_at");
           if (error) onToast("⚠ " + error.message); else { onToast("✓ Reveal time saved"); onSave(); }
         }}>Save</button>
       </div>
@@ -292,7 +292,9 @@ function Stats({ rounds, stats }) {
 function TestMode({ testMode, onSave, onReset, onToast }) {
   const [busy, setBusy] = useState(false);
   async function toggle(next) {
-    const { error } = await window.supabase.from("app_settings").update({ value: JSON.stringify(next) }).eq("key", "test_mode");
+    // supabase-js will JSON-encode the request body; pass the raw boolean so
+    // Postgres stores it as a JSON boolean, not the string "true" / "false".
+    const { error } = await window.supabase.from("app_settings").update({ value: next }).eq("key", "test_mode");
     if (error) onToast("⚠ " + error.message); else { onToast(next ? "✓ Test mode ON" : "✓ Test mode OFF"); onSave(); }
   }
   async function resetScores() {
