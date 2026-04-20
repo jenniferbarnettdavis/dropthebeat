@@ -166,6 +166,12 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .test-banner { background: #FFF2CC; border: 2px solid var(--remix-orange); padding: 10px 12px; margin-bottom: 14px; font-family: var(--font-sport); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--neta-ink); }
 .test-banner b { font-weight: 700; }
 
+.round-cd { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; margin: 0 0 14px; border: 2px solid var(--neta-ink); box-shadow: 4px 4px 0 0 var(--neta-ink); background: var(--remix-cyan); }
+.round-cd.next { background: var(--neta-paper); }
+.round-cd.urgent { background: var(--remix-pink); color: var(--neta-paper); }
+.round-cd-label { font-family: var(--font-sport); font-weight: 700; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.2; }
+.round-cd-time { font-family: var(--font-utility); font-weight: 700; font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+
 .house-rules { margin: 20px 0 24px; }
 .house-rule { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); box-shadow: 3px 3px 0 0 var(--neta-ink); margin-bottom: 8px; font-family: var(--font-body); font-size: 13px; line-height: 1.4; }
 .house-rule .icon { flex-shrink: 0; width: 24px; height: 24px; display: grid; place-items: center; border: 2px solid var(--neta-ink); font-family: var(--font-sport); font-weight: 700; font-size: 13px; }
@@ -243,6 +249,46 @@ function fmtTime(iso) {
   return d.toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
 }
 
+function fmtDuration(ms) {
+  if (ms <= 0) return "0:00";
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function RoundCountdown({ rounds }) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const live = rounds.find(r => r.effective_status === "live");
+  const next = rounds.find(r => r.effective_status === "upcoming");
+  let mode, title, remaining;
+  if (live) {
+    mode = "live";
+    title = `Round ${live.sort_order}: ${live.label} closes in`;
+    remaining = new Date(live.ends_at).getTime() - now;
+  } else if (next) {
+    mode = "next";
+    title = `Round ${next.sort_order}: ${next.label} starts in`;
+    remaining = new Date(next.starts_at).getTime() - now;
+  } else {
+    return null; // all done
+  }
+  if (remaining <= 0) return null;
+  const urgent = mode === "live" && remaining < 5 * 60 * 1000;
+  return (
+    <div className={"round-cd " + mode + (urgent ? " urgent" : "")}>
+      <div className="round-cd-label">{title}</div>
+      <div className="round-cd-time">{fmtDuration(remaining)}</div>
+    </div>
+  );
+}
+
 // ===== Screens =====
 function SignInScreen({ onSignIn }) {
   return (
@@ -292,6 +338,7 @@ function RoundsScreen({ user, rounds, playedRoundIds, onPick, onSignOut, onLeade
         <div style={{ fontFamily: "var(--font-sport)", fontWeight: 700, fontStyle: "italic", fontSize: 16 }}>What's your music IQ?</div>
         <div className="round-meta" style={{ marginTop: 4 }}>7 rounds · 15 questions each · 30 seconds per question · speed bonus</div>
       </div>
+      <RoundCountdown rounds={rounds} />
       <div className="round-meta" style={{ margin: "0 0 10px" }}>Choose a round</div>
       {rounds.map((r, i) => {
         const played = playedRoundIds.includes(r.id);

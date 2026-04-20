@@ -132,6 +132,40 @@ html, body {
 .live-badge.closed .dot { background: var(--fg-3); animation: none; }
 .live-badge small { display: block; font-size: 0.7em; font-weight: 400; opacity: 0.7; margin-top: 4px; }
 
+/* Big countdown strip */
+.countdown {
+  display: flex; justify-content: center; align-items: center; gap: clamp(14px, 2vw, 28px);
+  margin: 2vh 0 2vh;
+  padding: clamp(14px, 2vh, 24px) clamp(18px, 2vw, 32px);
+  border: 3px solid var(--neta-ink);
+  background: var(--neta-paper);
+  box-shadow: 6px 6px 0 0 var(--neta-ink);
+}
+.countdown.urgent { background: var(--remix-pink); color: var(--neta-paper); }
+.countdown.urgent .cd-label { color: var(--neta-paper); }
+.countdown.next { background: var(--neta-paper-dim); }
+.cd-label {
+  font-family: "Antonio", Impact, sans-serif;
+  font-weight: 700;
+  font-size: clamp(14px, 1.4vw, 22px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  text-align: right;
+  line-height: 1.1;
+  max-width: 32vw;
+}
+.cd-label b { color: var(--neta-ink); }
+.countdown.urgent .cd-label b { color: var(--neta-paper); }
+.cd-time {
+  font-family: "Helvetica Bold Condensed", "Oswald", Impact, sans-serif;
+  font-weight: 700;
+  font-size: clamp(44px, 6vw, 92px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
 /* Main leaderboard grid */
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2vw; }
 .grid.one-col { grid-template-columns: 1fr; max-width: 900px; margin: 0 auto; }
@@ -274,11 +308,57 @@ const supabase = createClient(
   { auth: { persistSession: false } } // no auth needed for public-read board
 );
 
-const REFRESH_INTERVAL_MS = 10000; // 10 seconds
+const REFRESH_INTERVAL_MS = 10000; // scores reload every 10s
+let roundsCache = [];
 
 function renderLive(round) {
   if (!round) return `<div class="live-badge closed"><span class="dot"></span>No round live</div>`;
   return `<div class="live-badge"><span class="dot"></span>Round ${round.sort_order} · ${round.label}<small>Live now</small></div>`;
+}
+
+function fmtDuration(ms) {
+  if (ms <= 0) return "0:00";
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function renderCountdown() {
+  const el = document.getElementById("countdown");
+  if (!el || !roundsCache.length) return;
+  const now = Date.now();
+  // Current live round
+  const live = roundsCache.find(r => r.effective_status === "live");
+  if (live) {
+    const remaining = new Date(live.ends_at).getTime() - now;
+    const urgent = remaining < 5 * 60 * 1000; // under 5 min
+    el.className = "countdown" + (urgent ? " urgent" : "");
+    el.innerHTML = `
+      <div class="cd-label"><b>Round ${live.sort_order}: ${escapeHtml(live.label)}</b><br/>closes in</div>
+      <div class="cd-time">${fmtDuration(remaining)}</div>
+    `;
+    return;
+  }
+  // No live round — find next upcoming
+  const next = roundsCache.find(r => r.effective_status === "upcoming");
+  if (next) {
+    const remaining = new Date(next.starts_at).getTime() - now;
+    el.className = "countdown next";
+    el.innerHTML = `
+      <div class="cd-label">Next round:<br/><b>Round ${next.sort_order}: ${escapeHtml(next.label)}</b> starts in</div>
+      <div class="cd-time">${fmtDuration(remaining)}</div>
+    `;
+    return;
+  }
+  // All rounds closed (conference is over)
+  el.className = "countdown next";
+  el.innerHTML = `
+    <div class="cd-label"><b>All rounds closed</b><br/>Thanks for playing!</div>
+    <div class="cd-time">—</div>
+  `;
 }
 
 function renderRow(rank, name, score, metaText) {
@@ -310,7 +390,8 @@ async function load() {
     supabase.from("scores").select("score, correct, total, round_id, player_id, players(display_name, email)"),
   ]);
 
-  const liveRound = (rounds || []).find(r => r.effective_status === "live");
+  roundsCache = rounds || [];
+  const liveRound = roundsCache.find(r => r.effective_status === "live");
 
   // Compute all-rounds total per player
   const byPlayer = new Map();
@@ -360,6 +441,8 @@ async function load() {
       ${renderLive(liveRound)}
     </div>
 
+    <div id="countdown" class="countdown"></div>
+
     <div class="grid ${showTwoCols ? "" : "one-col"}">
       <div>
         <div class="col-title">Overall Leaderboard</div>
@@ -378,6 +461,7 @@ async function load() {
       <div class="updated">Updated ${fmtTimestamp()}</div>
     </div>
   `;
+  renderCountdown();
 }
 
 function toggleFS() {
@@ -388,6 +472,7 @@ window.toggleFS = toggleFS;
 
 load();
 setInterval(load, REFRESH_INTERVAL_MS);
+setInterval(renderCountdown, 1000);
 </script>
 
 </body>
