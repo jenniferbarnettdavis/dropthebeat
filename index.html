@@ -62,7 +62,7 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 }
 .topbar { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 16px; }
 .topbar .brand { display: flex; align-items: center; gap: 10px; }
-.topbar .brand img { height: 32px; }
+.topbar .brand img { height: 40px; }
 .topbar .brand .t { font-family: var(--font-sport); font-weight: 700; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; }
 .topbar .who { font-family: var(--font-sport); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); cursor: pointer; background: none; border: none; }
 
@@ -213,7 +213,7 @@ function Brand() {
   return (
     <div className="brand">
       <img src="assets/neta-logo.png" alt="NETA" />
-      <div className="t">Drop the Beat</div>
+      <div className="t">Music Trivia</div>
     </div>
   );
 }
