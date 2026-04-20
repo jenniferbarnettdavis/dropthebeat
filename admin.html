@@ -388,7 +388,11 @@ function App() {
           <h1>Drop the Beat</h1>
           <div className="muted">Signed in as {user.email}</div>
         </div>
-        <div><a href="index.html" className="muted" style={{ marginRight: 12 }}>← Player app</a><button onClick={signOut}>Sign out</button></div>
+        <div>
+          <a href="index.html" className="muted" style={{ marginRight: 12 }}>← Player app</a>
+          <a href="board.html" target="_blank" className="muted" style={{ marginRight: 12 }}>📺 Projection board ↗</a>
+          <button onClick={signOut}>Sign out</button>
+        </div>
       </div>
 
       <h2>Test mode</h2>
