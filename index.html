@@ -137,8 +137,12 @@ html, body { margin: 0; padding: 0; background: var(--neta-paper-dim); color: va
 .lb-tab.active { background: var(--remix-orange); }
 .lb-row { display: grid; grid-template-columns: 36px 1fr 70px; gap: 10px; align-items: center; padding: 10px 12px; border: 2px solid var(--neta-ink); background: var(--neta-paper); box-shadow: 3px 3px 0 0 var(--neta-ink); margin-bottom: 8px; }
 .lb-row.me { background: var(--remix-cyan-tint); }
-.lb-rank { font-family: var(--font-chunky); font-weight: 700; font-size: 20px; color: var(--remix-pink); text-align: center; }
-.lb-rank.top { color: var(--remix-orange); }
+.lb-rank { font-family: var(--font-chunky); font-weight: 700; font-size: 20px; color: var(--neta-ink); text-align: center; }
+.lb-rank.top { color: var(--neta-ink); }
+/* Colored ring/medal around top-3 ranks for flair without hurting readability */
+.lb-rank.top { position: relative; width: 32px; height: 32px; margin: 0 auto; display: grid; place-items: center; border: 2px solid var(--neta-ink); border-radius: 50%; background: var(--remix-orange); }
+.lb-rank.top-2 { background: #D6D6D6; }
+.lb-rank.top-3 { background: #E3B88A; }
 .lb-name { font-family: var(--font-chunky); font-weight: 700; font-size: 15px; }
 .lb-score { font-family: var(--font-utility); font-weight: 700; font-size: 20px; text-align: right; }
 
@@ -570,7 +574,7 @@ function LeaderboardScreen({ user, rounds, onBack }) {
        rows.length === 0 ? <div className="loading">No scores yet — be the first!</div> :
        rows.map((r, i) => (
          <div key={i} className={"lb-row" + (r.email === user.email ? " me" : "")}>
-           <div className={"lb-rank" + (i < 3 ? " top" : "")}>{i + 1}</div>
+           <div className={"lb-rank" + (i < 3 ? " top" : "") + (i === 1 ? " top-2" : i === 2 ? " top-3" : "")}>{i + 1}</div>
            <div>
              <div className="lb-name">{r.name}</div>
              <div className="round-meta">{tab === "all" ? `${r.rounds} rounds` : `${r.correct}/${r.total} correct`}</div>
