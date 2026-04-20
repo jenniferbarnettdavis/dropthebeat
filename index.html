@@ -504,6 +504,7 @@ function LeaderboardScreen({ user, rounds, onBack }) {
   return (
     <>
       <div className="topbar"><Brand /><button className="who" onClick={onBack}>← back</button></div>
+      <PosterHeader />
       <div className="lb-header">Leaderboard</div>
       <div className="lb-tabs">
         <button className={"lb-tab" + (tab === "all" ? " active" : "")} onClick={() => setTab("all")}>All Rounds</button>
