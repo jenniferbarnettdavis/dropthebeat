@@ -252,7 +252,7 @@ function SignInScreen({ onSignIn }) {
         <PosterHeader />
         <div className="signin-eyebrow">NETA 2026</div>
         <div className="signin-title">What's your<br />music IQ?</div>
-        <div className="signin-sub">7 rounds · 15 questions each · 30 sec per question · speed bonus</div>
+        <div className="signin-sub">7 rounds · 15 questions each · 30 seconds per question · speed bonus</div>
       </div>
       <div className="house-rules">
         <div className="house-rule warn">
@@ -290,7 +290,7 @@ function RoundsScreen({ user, rounds, playedRoundIds, onPick, onSignOut, onLeade
       <PosterHeader />
       <div className="card" style={{ marginBottom: 14, padding: 12 }}>
         <div style={{ fontFamily: "var(--font-sport)", fontWeight: 700, fontStyle: "italic", fontSize: 16 }}>What's your music IQ?</div>
-        <div className="round-meta" style={{ marginTop: 4 }}>7 rounds · 20 Qs each · 30s per Q · speed bonus</div>
+        <div className="round-meta" style={{ marginTop: 4 }}>7 rounds · 15 questions each · 30 seconds per question · speed bonus</div>
       </div>
       <div className="round-meta" style={{ margin: "0 0 10px" }}>Choose a round</div>
       {rounds.map((r, i) => {
@@ -329,7 +329,7 @@ function StartRoundScreen({ round, onStart, onExit }) {
         {round.label}
       </div>
       <div style={{ textAlign: "center", fontFamily: "var(--font-sport)", fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--fg-2)", marginBottom: 18 }}>
-        15 questions · 30 sec each · speed bonus
+        15 questions · 30 seconds each · speed bonus
       </div>
       <div className="house-rules" style={{ margin: "0 0 20px" }}>
         <div className="house-rule warn">
